@@ -168,6 +168,15 @@
     <ClCompile Include="imgui\TextEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="aceb\bypass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aceb\hook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aceb\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="kiero\minhook\src\buffer.h">
@@ -269,6 +278,18 @@
     <ClInclude Include="games\wordle.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="aceb\bypass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aceb\hook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aceb\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dumpstr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="kiero\minhook\dll_resources\MinHook.def">
@@ -279,5 +300,6 @@
     <Font Include="res\fonts\mpc.otf" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="aceb\MinHook.lib" />
   </ItemGroup>
 </Project>

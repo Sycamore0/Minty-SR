@@ -13,14 +13,15 @@
 #include "imgui/L2DFileDialog.h"
 #include <chrono>
 #include <thread>
-
+#include "aceb/bypass.h"
+//#include "aceb/hook.h"
 #include "gilua/logtextbuf.h"
 #include <Windows.h>
 #include <ShObjIdl.h>
 #include <ObjBase.h>
-
+#pragma comment(lib, "aceb/MinHook.lib")
 #include "json/json.hpp"
-
+#include "dumpstr.h"
 #include "games/tictactoe.hpp" //WORK IN PROGRESS
 #include "games/lightsout.hpp"
 #include "games/wordle.hpp"
@@ -67,6 +68,54 @@ static void HelpMarker(const char* desc)
 		ImGui::EndTooltip();
 	}
 }
+
+
+struct TreeNode
+{
+	std::string name;
+	std::vector<TreeNode> children;
+};
+
+TreeNode createTree(const std::vector<std::string>& lines)
+{
+	TreeNode root;
+	for (const auto& line : lines) {
+		std::istringstream iss(line);
+		std::string token;
+		TreeNode* current = &root;
+		while (std::getline(iss, token, '/')) {
+			if (token.empty()) {
+				continue;
+			}
+			auto it = std::find_if(current->children.begin(), current->children.end(),
+				[&](const TreeNode& node) { return node.name == token; });
+			if (it == current->children.end()) {
+				current->children.push_back({ token, {} });
+				current = &current->children.back();
+			}
+			else {
+				current = &(*it);
+			}
+		}
+	}
+	return root;
+}
+
+void drawTree(TreeNode& node)
+{
+	if (node.children.empty()) {
+		ImGui::TreeNodeEx(node.name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
+	}
+	else {
+		if (ImGui::TreeNodeEx(node.name.c_str())) {
+			for (auto& child : node.children) {
+				drawTree(child);
+			}
+			ImGui::TreePop();
+		}
+	}
+}
+
 
 bool init = false;
 static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
@@ -182,7 +231,7 @@ static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 				ImGui::InputTextWithHint("##input", "Enter custom UID text here...", UID_inputTextBuffer, sizeof(UID_inputTextBuffer));
 				ImGui::SameLine();
 				if (ImGui::Button("Update custom UID")) {
-					string result = R"MY_DELIMITER(CS.UnityEngine.GameObject.Find("/BetaWatermarkCanvas(Clone)/Panel/TxtUID"):GetComponent("Text").text = ")MY_DELIMITER" + string(UID_inputTextBuffer) + "\"";
+					string result = R"MY_DELIMITER(CS.UnityEngine.GameObject.Find("UIRoot/AboveDialog/BetaHintDialog(Clone)"):GetComponent("Text").text = ")MY_DELIMITER" + string(UID_inputTextBuffer) + "\"";
 					luahookfunc(result.c_str());
 				}
 				ImGui::SameLine();
@@ -264,10 +313,10 @@ static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 				static float cc_a = 1.0f;
 				static ImVec4 infusion_col = ImVec4( 1.0f, 1.0f, 1.0f, 1.0f );
 
-				ImGui::Checkbox("Infusion changer", &show_colorator3000);
-				ImGui::SameLine();
-				HelpMarker("Changes color of Elemental Infusion/Blade trail of your current character. Adjust color either with sliders or with color picker. Works perfectly on swords, greatswords, polearms.");
-				if (show_colorator3000)
+				//ImGui::Checkbox("Infusion changer", &show_colorator3000);
+				//ImGui::SameLine();
+				//HelpMarker("Changes color of Elemental Infusion/Blade trail of your current character. Adjust color either with sliders or with color picker. Works perfectly on swords, greatswords, polearms.");
+				/*if (show_colorator3000)
 				{
 					ImGui::Indent();
 
@@ -285,47 +334,47 @@ static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 					cc_a = infusion_col.w;
 
 					ImGui::Unindent();
-				}
+				}*/
 
 				static bool animcheng = false;
 				static int anim_select_index = 0;
-				ImGui::Checkbox("Animation Changer", &animcheng);
-				ImGui::SameLine();
-				HelpMarker("Change current avatar's animation.");
-				if (animcheng) {
-					ImGui::Indent();
-					if(ImGui::Combo("Animations", &anim_select_index, animation_options, IM_ARRAYSIZE(animation_options))) {}
+				//ImGui::Checkbox("Animation Changer", &animcheng);
+				//ImGui::SameLine();
+				//HelpMarker("Change current avatar's animation.");
+				//if (animcheng) {
+				//	ImGui::Indent();
+				//	if(ImGui::Combo("Animations", &anim_select_index, animation_options, IM_ARRAYSIZE(animation_options))) {}
 			
-					if (ImGui::Button("Change"))
-					{
-						string result = animchanger + string(animation_options[anim_select_index]) + animchanger2; 
-						luahookfunc(result.c_str());
-					}
-					if (ImGui::Button("Reset"))
-					{
-						luahookfunc(animchangerreturn);
-					}
-					ImGui::Unindent();
-				}
+				//	if (ImGui::Button("Change"))
+				//	{
+				//		string result = animchanger + string(animation_options[anim_select_index]) + animchanger2; 
+				//		luahookfunc(result.c_str());
+				//	}
+				//	if (ImGui::Button("Reset"))
+				//	{
+				//		luahookfunc(animchangerreturn);
+				//	}
+				//	ImGui::Unindent();
+				//}
 
-				static bool emocheng = false;
-				static int emo_select_index = 0;
-				static int pho_select_index = 0;
-				ImGui::Checkbox("Emotion Changer", &emocheng);
-				ImGui::SameLine();
-				HelpMarker("Change current avatar's emotion.");
-				if (emocheng) {
-					ImGui::Indent();
-					if (ImGui::Combo("Face expression", &emo_select_index, emo_options, IM_ARRAYSIZE(emo_options))) {}
-					if (ImGui::Combo("Mouth expression", &pho_select_index, pho_options, IM_ARRAYSIZE(pho_options))) {}
+				//static bool emocheng = false;
+				//static int emo_select_index = 0;
+				//static int pho_select_index = 0;
+				//ImGui::Checkbox("Emotion Changer", &emocheng);
+				//ImGui::SameLine();
+				//HelpMarker("Change current avatar's emotion.");
+				//if (emocheng) {
+				//	ImGui::Indent();
+				//	if (ImGui::Combo("Face expression", &emo_select_index, emo_options, IM_ARRAYSIZE(emo_options))) {}
+				//	if (ImGui::Combo("Mouth expression", &pho_select_index, pho_options, IM_ARRAYSIZE(pho_options))) {}
 
-					if (ImGui::Button("Change"))
-					{
-						string result = emochengemo1 + string(emo_options[emo_select_index]) + emochengemo2 + string(pho_options[emo_select_index]) + emochengpho2;
-						luahookfunc(result.c_str());
-					}
+				//	if (ImGui::Button("Change"))
+				//	{
+				//		string result = emochengemo1 + string(emo_options[emo_select_index]) + emochengemo2 + string(pho_options[emo_select_index]) + emochengpho2;
+				//		luahookfunc(result.c_str());
+				//	}
 		
-				}
+				//}
 
 
 				ImGui::SeparatorText("World");
@@ -374,21 +423,21 @@ static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 
 				bool show_mofile_dialog = false;
 
-				ImGui::Separator();
-				ImGui::Text("MO Loader");
+				//ImGui::Separator();
+				//ImGui::Text("MO Loader");
 
 
-				ImGui::InputTextWithHint("", "Enter your path to .mo file", inputmoFilePath, sizeof(inputmoFilePath));
-				ImGui::InputTextWithHint("", "Enter your path to .png file", inputpngFilePath, sizeof(inputpngFilePath));
+				//ImGui::InputTextWithHint("", "Enter your path to .mo file", inputmoFilePath, sizeof(inputmoFilePath));
+				//ImGui::InputTextWithHint("", "Enter your path to .png file", inputpngFilePath, sizeof(inputpngFilePath));
 
-				ImGui::SameLine();
+				//ImGui::SameLine();
 
-				if (ImGui::Button("Load MO")) {
-					string result = string(char_moloader) + R"MY_DELIMITER(local moFilePath = ")MY_DELIMITER" + string(inputmoFilePath) + "\" \n" + R"MY_DELIMITER(local TextPath = ")MY_DELIMITER" + string(inputpngFilePath) + "\" \n" + string(char_moloader2);
-					luahookfunc(result.c_str());
-				}
-				ImGui::SameLine();
-				HelpMarker("Creates 3D object in world, which will be imported from defined paths.");
+				//if (ImGui::Button("Load MO")) {
+				//	string result = string(char_moloader) + R"MY_DELIMITER(local moFilePath = ")MY_DELIMITER" + string(inputmoFilePath) + "\" \n" + R"MY_DELIMITER(local TextPath = ")MY_DELIMITER" + string(inputpngFilePath) + "\" \n" + string(char_moloader2);
+				//	luahookfunc(result.c_str());
+				//}
+				//ImGui::SameLine();
+				//HelpMarker("Creates 3D object in world, which will be imported from defined paths.");
 
 
 				ImGui::SeparatorText("Misc");
@@ -411,10 +460,10 @@ static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 
 				if(ImGui::Checkbox("Hide UI", &hideui)) {
 					if (hideui) {
-						luahookfunc(char_uicamera_off);
+						luahookfunc("CS.UnityEngine.GameObject.Find(\"UICamera\"):SetActive(false)");
 					}
 					else {
-						luahookfunc(char_uicamera_on);
+						luahookfunc("CS.UnityEngine.GameObject.Find(\"UICamera\"):SetActive(true)");
 					}
 				}
 				ImGui::SameLine();
@@ -828,6 +877,28 @@ static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 				}
 				ImGui::EndTabItem();
 			}
+			static bool ifdraw = false;
+			if (ImGui::BeginTabItem("Explorer"))
+			{
+				std::ifstream file("logs.txt");
+				std::vector<std::string> lines;
+				std::string line;
+				while (std::getline(file, line)) {
+					lines.push_back(line);
+				}
+				file.close();
+
+				if (ImGui::Button("DrawTree")) {
+					ifdraw = true;
+				}
+
+				if (ifdraw) {
+					auto tree = createTree(lines);
+					drawTree(tree);
+				}
+
+				ImGui::EndTabItem();
+			}
 			if (ImGui::BeginTabItem("Games"))
 			{
 				ImGui::SeparatorText("Lights out");
@@ -904,8 +975,11 @@ static HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval
 //		CloseHandle(CreateThread(NULL, 0, &start, NULL, NULL, NULL));
 //	return TRUE;
 //}
+int abcde;
 DWORD WINAPI MainThread(LPVOID lpReserved)
 {
+	bypass::init();
+	util::log(2, "BYPASS LITERALLY WORKS OMFG NO FUCKING WAY");
 	bool init_hook = false;
 	do
 	{
