@@ -148,11 +148,14 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(projectDir)lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;lua53.lib;minhook.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(projectDir)aceb;$(projectDir)lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aceb\bypass.cpp" />
+    <ClCompile Include="aceb\hook.cpp" />
+    <ClCompile Include="aceb\utils.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -207,6 +210,10 @@
     <None Include="kiero\minhook\dll_resources\MinHook.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aceb\bypass.h" />
+    <ClInclude Include="aceb\hook.h" />
+    <ClInclude Include="aceb\utils.h" />
+    <ClInclude Include="dumpstr.h" />
     <ClInclude Include="games\lightsout.hpp" />
     <ClInclude Include="games\tictactoe.hpp" />
     <ClInclude Include="games\wordle.hpp" />
@@ -245,6 +252,7 @@
     <Font Include="res\fonts\mpc.otf" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="aceb\MinHook.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

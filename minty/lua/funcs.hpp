@@ -458,7 +458,7 @@ local function findHierarchyPath(child)
  end
 
 local function FindOffsetDummy()
-	local avatarRoot = CS.UnityEngine.GameObject.Find("/EntityRoot/AvatarRoot")
+	local avatarRoot = CS.UnityEngine.GameObject.Find("EntityRoot/PlayerRoot")
 	if avatarRoot.transform.childCount == 0 then
 	   return
 	end
@@ -526,7 +526,7 @@ local function findHierarchyPath(child)
  end
 
 local function FindOffsetDummy()
-	local avatarRoot = CS.UnityEngine.GameObject.Find("/EntityRoot/AvatarRoot")
+	local avatarRoot = CS.UnityEngine.GameObject.Find("EntityRoot/PlayerRoot")
 	if avatarRoot.transform.childCount == 0 then
 	   return
 	end
@@ -555,7 +555,7 @@ const char* char_openarea_fog = R"MY_DELIMITER(CS.UnityEngine.GameObject.Find("/
 const char* char_guidearea_fog = R"MY_DELIMITER(CS.UnityEngine.GameObject.Find("/LevelMapUIManager(Clone)/Canvas3D/MapBackContainer/BigWorld_Map(Clone)/GuideArea"):SetActive()MY_DELIMITER";
 
 const char* char_avatarresize = R"MY_DELIMITER(
-CS.UnityEngine.GameObject.Find("/EntityRoot/AvatarRoot").transform.localScale = CS.UnityEngine.Vector3()MY_DELIMITER";
+CS.UnityEngine.GameObject.Find("EntityRoot/PlayerRoot").transform.localScale = CS.UnityEngine.Vector3()MY_DELIMITER";
 
 const char* char_modelswap_clone = R"MY_DELIMITER(
     local function findBodyPartWithName(model,queryName)
@@ -586,7 +586,7 @@ local function getOtherAvatarBipRotation(avatar)
 end
 
 local function findActiveCharacter() --get parent of offsetdummy
-	local avatarRoot = CS.UnityEngine.GameObject.Find("/EntityRoot/AvatarRoot")
+	local avatarRoot = CS.UnityEngine.GameObject.Find("EntityRoot/PlayerRoot")
     if avatarRoot.transform.childCount == 0 then
 		return
 	end
@@ -608,7 +608,7 @@ local function findActiveCharacterBody(avatar)
 end
 
 local function findActiveCharacterModel() --get child of offsetdummy
-	local avatarRoot = CS.UnityEngine.GameObject.Find("/EntityRoot/AvatarRoot")
+	local avatarRoot = CS.UnityEngine.GameObject.Find("EntityRoot/PlayerRoot")
     if avatarRoot.transform.childCount == 0 then
 		return
 	end
@@ -727,7 +727,7 @@ local function findActiveCharacter(path) --get parent of offsetdummy
 end
 
 local function findActiveCharacterModel() --get child of offsetdummy
-	local avatarRoot = CS.UnityEngine.GameObject.Find("/EntityRoot/AvatarRoot");
+	local avatarRoot = CS.UnityEngine.GameObject.Find("EntityRoot/PlayerRoot");
     if avatarRoot.transform.childCount == 0 then
 		return
 	end
@@ -776,20 +776,20 @@ local function swap()
 	local clonedAvatarModel = findActiveCharacter("CloneRoot")
 	
 	--get weaponroot of chars
-	local currAvatarWeaponRoot = findCharacterObj("AvatarRoot", "WeaponRoot")
-	local currAvatarWeaponL = findCharacterObj("AvatarRoot", "WeaponL")
-	local currAvatarWeaponR = findCharacterObj("AvatarRoot", "WeaponR")
+	local currAvatarWeaponRoot = findCharacterObj("PlayerRoot", "WeaponRoot")
+	local currAvatarWeaponL = findCharacterObj("PlayerRoot", "WeaponL")
+	local currAvatarWeaponR = findCharacterObj("PlayerRoot", "WeaponR")
 	
 	local clonedAvatarWeaponRoot = findCharacterObj("CloneRoot","Bip001 Spine1")
 	local clonedAvatarWeaponL = findCharacterObj("CloneRoot","Bip001 L Hand")
 	local clonedAvatarWeaponR = findCharacterObj("CloneRoot","Bip001 R Hand")
 	
 	--eye fix finding
-	local currAvatarEyeL = findCharacterObj("AvatarRoot", "+EyeBone L A01")
-	local currAvatarEyeR = findCharacterObj("AvatarRoot", "+EyeBone R A01")
-	local currAvatarToothD = findCharacterObj("AvatarRoot", "+ToothBone D A01")
-	local currAvatarToothU = findCharacterObj("AvatarRoot", "+ToothBone U A01")
-	local currAvatarFlyCloak = findCharacterObj("AvatarRoot", "+FlycloakRootB CB A01")
+	local currAvatarEyeL = findCharacterObj("PlayerRoot", "+EyeBone L A01")
+	local currAvatarEyeR = findCharacterObj("PlayerRoot", "+EyeBone R A01")
+	local currAvatarToothD = findCharacterObj("PlayerRoot", "+ToothBone D A01")
+	local currAvatarToothU = findCharacterObj("PlayerRoot", "+ToothBone U A01")
+	local currAvatarFlyCloak = findCharacterObj("PlayerRoot", "+FlycloakRootB CB A01")
 	
 	local clonedAvatarHeadBone = findCharacterObj("CloneRoot","Bip001 Head")
 	local clonedAvatarGlider = findCharacterObj("CloneRoot","Bip001 Spine2")

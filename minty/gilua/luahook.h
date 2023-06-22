@@ -202,6 +202,11 @@ DWORD initLua(LPVOID) {
 	util::log(2,"Starting", "");
     //auto dir = get_scripts_folder();
 
+    /*bypass::init();
+    hook::init();
+    
+    util::log(2, "BYPASS LITERALLY WORKS OMFG NO FUCKING WAY");*/
+     
     get_gi_L();
 
     auto state = luaL_newstate();
